@@ -1,0 +1,25 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "e2ae5b5"
+  },
+  "schemaVersion": 19,
+  "id": "validate-step-04h64jo",
+  "components": [
+    {
+      "label": "File picker",
+      "type": "filepicker",
+      "layout": {
+        "row": "Row_0yrcl5e",
+        "columns": null
+      },
+      "id": "Field_19libmq",
+      "key": "InputFiles",
+      "multiple": true,
+      "accept": "jpg, png, pdf, docx, tiff"
+    }
+  ],
+  "type": "default"
+}
