@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="aeb6dcc" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+  <bpmn:process id="Process_105hzwt" name="ABBYY Vantage - Download Results" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1" name="Start">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="={&#10;  Error: null,&#10;  Documents: &#10;  [&#10;    {&#10;      id: &#34;5b51132d-44c0-4a72-ab7b-16473dc5b280&#34;,&#10;      resultFiles: &#10;      [&#10;        {&#10;          fileId: &#34;.blob.0333135c-f3af-48f6-8770-8bbba83e1459&#34;,&#10;          fileName: &#34;Invoice.json&#34;,&#10;          type: &#34;Json&#34;&#10;        },&#10;        {&#10;          fileId: &#34;.blob.4a4dfc26-37dd-4244-a6e2-44bb2093d03c&#34;,&#10;          fileName: &#34;Invoice_fields.json&#34;,&#10;          type: &#34;FieldsJson&#34;&#10;        }&#10;      ],&#10;      businessRulesErrors: [&#10;        {&#10;          errorType: &#34;CustomScript&#34;,&#10;          customMessage: &#34;Currency does not match allowed values. \n Main Currency;\n LI Currency 1;&#34;,&#10;          ruleId: &#34;38a17082-20d9-4551-b081-d8467416bb25&#34;&#10;        },&#10;        {&#10;          errorType: &#34;Normalization&#34;&#10;        }&#10;      ]&#10;    }&#10;  ],&#10;  TransactionID: &#34;e9b428bd-4457-4e1c-bdc8-83e3ca7243f8&#34;,&#10;  Status: &#34;Processed&#34;,&#10;  ManualReviewLink: null,&#10;  SourceFiles: [&#10;    {&#10;      id: &#34;.blob.25185fc1-cb75-4f3f-a8a4-1d9aeb9056b3&#34;,&#10;      name: &#34;invoice_3.jpg&#34;&#10;    }&#10;  ]&#10;}" target="ProcessingResults" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_1dsd9fa</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:subProcess id="Activity_0g53xun" name="For each Document in ProcessingResults.Documents">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:input source="=ProcessingResults" target="ProcessingResults" />
+          <zeebe:input source="=VantageAuth" target="VantageAuth" />
+          <zeebe:output source="=ResultFiles" target="Results" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1wuhlsw</bpmn:incoming>
+      <bpmn:outgoing>Flow_0isrmz3</bpmn:outgoing>
+      <bpmn:multiInstanceLoopCharacteristics isSequential="true">
+        <bpmn:extensionElements>
+          <zeebe:loopCharacteristics inputCollection="=ProcessingResults.Documents" inputElement="Document" />
+        </bpmn:extensionElements>
+      </bpmn:multiInstanceLoopCharacteristics>
+      <bpmn:startEvent id="Event_0cshgm5" name="Download Document Result Files">
+        <bpmn:extensionElements>
+          <zeebe:ioMapping>
+            <zeebe:output source="={&#10;  id: Document.id,&#10;  resultFiles: Document.resultFiles,&#10;  classification: Document.classification,&#10;  businessRuleErrors: Document.businessRuleErrors&#10;}" target="Document" />
+            <zeebe:output source="=Document.resultFiles" target="DocumentResultFiles" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
+        <bpmn:outgoing>Flow_0ytod6p</bpmn:outgoing>
+      </bpmn:startEvent>
+      <bpmn:subProcess id="Activity_01o3qa1" name="For each resultFile in Document.resultFiles">
+        <bpmn:extensionElements>
+          <zeebe:ioMapping>
+            <zeebe:input source="=Document" target="Document" />
+            <zeebe:input source="=ProcessingResults" target="ProcessingResults" />
+            <zeebe:input source="=VantageAuth" target="VantageAuth" />
+            <zeebe:input source="=DocumentResultFiles" target="DocumentResultFiles" />
+            <zeebe:output source="=ResultFiles" target="ResultFiles" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0ytod6p</bpmn:incoming>
+        <bpmn:outgoing>Flow_0ixort9</bpmn:outgoing>
+        <bpmn:multiInstanceLoopCharacteristics isSequential="true">
+          <bpmn:extensionElements>
+            <zeebe:loopCharacteristics inputCollection="=DocumentResultFiles" inputElement="ResultFileMetadata" outputCollection="ResultFiles" outputElement="=ResultFile.document" />
+          </bpmn:extensionElements>
+        </bpmn:multiInstanceLoopCharacteristics>
+        <bpmn:startEvent id="Event_0exe0uv" name="Download using File ID">
+          <bpmn:extensionElements>
+            <zeebe:ioMapping>
+              <zeebe:output source="={&#10;  fileId: ResultFileMetadata.fileId,&#10;  fileName: ResultFileMetadata.fileName,&#10;  type: ResultFileMetadata.type  &#10;}" target="ResultFileMetadata" />
+            </zeebe:ioMapping>
+          </bpmn:extensionElements>
+          <bpmn:outgoing>Flow_1vxn1nt</bpmn:outgoing>
+        </bpmn:startEvent>
+        <bpmn:sequenceFlow id="Flow_1vxn1nt" sourceRef="Event_0exe0uv" targetRef="Activity_0q8wbd7" />
+        <bpmn:endEvent id="Event_1mlp0ch" name="Return Downloaded File">
+          <bpmn:extensionElements>
+            <zeebe:ioMapping>
+              <zeebe:output source="=ResultFile" target="ResultFile" />
+            </zeebe:ioMapping>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_0get4cm</bpmn:incoming>
+        </bpmn:endEvent>
+        <bpmn:serviceTask id="Activity_0q8wbd7" name="Download Result File" zeebe:modelerTemplate="Template_1u7lwf9" zeebe:modelerTemplateVersion="1" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNDI5LjU5IDQzMC4xIj4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiAjZmYyMDM4OwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Im0xMzQwLjI4LDBsLTMwLjMsMTM4Ljc2Yy00Ljc4LDIxLjI3LTcuOTcsNDEuNDctMTIuMjMsNzAuNzFoLTIuNjZjLTQuMjUtMjkuMjQtNy40NC00OS40NC0xMi4yMy03MC43MUwxMjUyLjU2LDBoLTk1LjE2bDkxLjQ0LDMwMC45MXYxMjkuMTloODkuMzJ2LTEyOS4xOUwxNDI5LjU5LDBoLTg5LjMyWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0ibTEwMzIuNDUsMTM4Ljc2Yy00Ljc4LDIxLjI3LTcuOTcsNDEuNDctMTIuMjMsNzAuNzFoLTIuNjZjLTQuMjUtMjkuMjQtNy40NC00OS40NC0xMi4yMy03MC43MUw5NzUuMDQsMGgtOTUuMTZsOTEuNDQsMzAwLjkxdjEyOS4xOWg4OS4zMnYtMTI5LjE5TDExNTIuMDcsMGgtODkuMzJsLTMwLjMsMTM4Ljc2WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0ibTIwNy4zNCwwaC0xMTkuMDlMMCw0MzAuMWg5MC4zOGwxNS4xNC05Ny4yOWg4MC44M2wxNS4xNCw5Ny4yOWg5NC4xTDIwNy4zNCwwWm0tOTAuOSwyNjIuNjNsMjAuMTktMTI5LjcyYzMuMTktMjAuMiw1LjMyLTM5Ljg3LDcuOTctNjcuNTJoMi42NmMyLjY2LDI3LjY1LDQuNzgsNDcuMzIsNy45Nyw2Ny41MmwyMC4xOSwxMjkuNzJoLTU4Ljk5WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0ibTUxNy44MiwyMDEuNDl2LS41M2MzMC44NC0xMC42Myw1Mi42My00Mi41Myw1Mi42My04OC4yNSwwLTY5LjExLTM5LjM0LTExMi43MS0xMjMuMzQtMTEyLjcxaC0xMTkuNjJ2NDMwLjFoMTI3LjA2Yzg2LjEzLDAsMTI1LjQ3LTQ2Ljc4LDEyNS40Ny0xMjQuNCwwLTU5LjU0LTI0LjQ2LTkwLjkxLTYyLjItMTA0LjJabS0xMDMuMTQtMTM5LjI5aDI0LjQ2YzI4LjcxLDAsNDMuMDYsMTYuNDgsNDMuMDYsNTguNDhzLTE0LjM1LDU4LjQ4LTQzLjA2LDU4LjQ4aC0yNC40NlY2Mi4yWm0zMS45LDMwNS43aC0zMS45di0xMjguNjZoMzEuOWMyOS4yNCwwLDQyLjUzLDE4LjYxLDQyLjUzLDY0LjMzcy0xMy4yOSw2NC4zMy00Mi41Myw2NC4zM1oiLz4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Im04MTQuNDgsMjAxLjQ5di0uNTNjMzAuODQtMTAuNjMsNTIuNjMtNDIuNTMsNTIuNjMtODguMjUsMC02OS4xMS0zOS4zNC0xMTIuNzEtMTIzLjM0LTExMi43MWgtMTE5LjYydjQzMC4xaDEyNy4wNmM4Ni4xMywwLDEyNS40Ny00Ni43OCwxMjUuNDctMTI0LjQsMC01OS41NC0yNC40Ni05MC45MS02Mi4yLTEwNC4yWm0tMTAzLjE0LTEzOS4yOWgyNC40NmMyOC43MSwwLDQzLjA2LDE2LjQ4LDQzLjA2LDU4LjQ4cy0xNC4zNSw1OC40OC00My4wNiw1OC40OGgtMjQuNDZWNjIuMlptMzEuOSwzMDUuN2gtMzEuOXYtMTI4LjY2aDMxLjljMjkuMjQsMCw0Mi41MywxOC42MSw0Mi41Myw2NC4zM3MtMTMuMjksNjQuMzMtNDIuNTMsNjQuMzNaIi8+Cjwvc3ZnPg==">
+          <bpmn:extensionElements>
+            <zeebe:taskDefinition type="io.camunda:http-json:1" retries="1" />
+            <zeebe:ioMapping>
+              <zeebe:input source="bearer" target="authentication.type" />
+              <zeebe:input source="=VantageAuth.accessToken" target="authentication.token" />
+              <zeebe:input source="GET" target="method" />
+              <zeebe:input source="{{secrets.VANTAGE_BASE_URL}}" target="baseurl" />
+              <zeebe:input source="=&#34;/api/publicapi/v1/transactions/&#34;+ProcessingResults.TransactionID&#10;+&#34;/files/&#34; + ResultFileMetadata.fileId&#10;+&#34;/download&#34;" target="path" />
+              <zeebe:input source="=baseurl+path" target="url" />
+              <zeebe:input source="={&#10;  &#34;Accept&#34;: &#34;application/octet-stream&#34;,&#10;  &#34;Content-Type&#34;: &#34;multipart/form-data&#34;, &#10;  &#34;uploaded-by&#34;: &#34;camunda-saas&#34;&#10;}" target="headers" />
+              <zeebe:input source="=true" target="storeResponse" />
+              <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
+              <zeebe:input source="=20" target="readTimeoutInSeconds" />
+              <zeebe:input source="=false" target="ignoreNullValues" />
+            </zeebe:ioMapping>
+            <zeebe:taskHeaders>
+              <zeebe:header key="elementTemplateVersion" value="12" />
+              <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
+              <zeebe:header key="resultVariable" value="ResultFile" />
+              <zeebe:header key="resultExpression" value="={&#10;  status: response.status,&#10;  fileDocId: response.document.documentId,&#10;  fileName: response.document.fileName,&#10;  contentType: response.document.metadata.contentType,&#10;  size: response.document.metadata.size,&#10;  expiresAt: response.document.metadata.expiresAt,&#10;  requestId: response.headers[&#34;x-request-id&#34;]&#10;}" />
+              <zeebe:header key="errorExpression" />
+              <zeebe:header key="retryBackoff" value="PT0S" />
+            </zeebe:taskHeaders>
+          </bpmn:extensionElements>
+          <bpmn:incoming>Flow_1vxn1nt</bpmn:incoming>
+          <bpmn:outgoing>Flow_0get4cm</bpmn:outgoing>
+        </bpmn:serviceTask>
+        <bpmn:sequenceFlow id="Flow_0get4cm" sourceRef="Activity_0q8wbd7" targetRef="Event_1mlp0ch" />
+      </bpmn:subProcess>
+      <bpmn:sequenceFlow id="Flow_0ytod6p" sourceRef="Event_0cshgm5" targetRef="Activity_01o3qa1" />
+      <bpmn:endEvent id="Event_0b60704" name="Return collection of result files">
+        <bpmn:extensionElements>
+          <zeebe:ioMapping>
+            <zeebe:output source="=ResultFiles" target="ResultFiles" />
+          </zeebe:ioMapping>
+        </bpmn:extensionElements>
+        <bpmn:incoming>Flow_0ixort9</bpmn:incoming>
+      </bpmn:endEvent>
+      <bpmn:sequenceFlow id="Flow_0ixort9" sourceRef="Activity_01o3qa1" targetRef="Event_0b60704" />
+    </bpmn:subProcess>
+    <bpmn:sequenceFlow id="Flow_1dsd9fa" sourceRef="StartEvent_1" targetRef="Activity_0of9u2l" />
+    <bpmn:endEvent id="Event_187s21t" name="End">
+      <bpmn:extensionElements>
+        <zeebe:ioMapping>
+          <zeebe:output source="=Results" target="Results" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_0isrmz3</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_1wuhlsw" sourceRef="Activity_0of9u2l" targetRef="Activity_0g53xun" />
+    <bpmn:serviceTask id="Activity_0of9u2l" name="Get OAuth Token" zeebe:modelerTemplate="vantage-get-oauth-token" zeebe:modelerTemplateVersion="9" zeebe:modelerTemplateIcon="data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyBpZD0iTGF5ZXJfMSIgZGF0YS1uYW1lPSJMYXllciAxIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNDI5LjU5IDQzMC4xIj4KICA8ZGVmcz4KICAgIDxzdHlsZT4KICAgICAgLmNscy0xIHsKICAgICAgICBmaWxsOiAjZmYyMDM4OwogICAgICB9CiAgICA8L3N0eWxlPgogIDwvZGVmcz4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Im0xMzQwLjI4LDBsLTMwLjMsMTM4Ljc2Yy00Ljc4LDIxLjI3LTcuOTcsNDEuNDctMTIuMjMsNzAuNzFoLTIuNjZjLTQuMjUtMjkuMjQtNy40NC00OS40NC0xMi4yMy03MC43MUwxMjUyLjU2LDBoLTk1LjE2bDkxLjQ0LDMwMC45MXYxMjkuMTloODkuMzJ2LTEyOS4xOUwxNDI5LjU5LDBoLTg5LjMyWiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0ibTEwMzIuNDUsMTM4Ljc2Yy00Ljc4LDIxLjI3LTcuOTcsNDEuNDctMTIuMjMsNzAuNzFoLTIuNjZjLTQuMjUtMjkuMjQtNy40NC00OS40NC0xMi4yMy03MC43MUw5NzUuMDQsMGgtOTUuMTZsOTEuNDQsMzAwLjkxdjEyOS4xOWg4OS4zMnYtMTI5LjE5TDExNTIuMDcsMGgtODkuMzJsLTMwLjMsMTM4Ljc2WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0ibTIwNy4zNCwwaC0xMTkuMDlMMCw0MzAuMWg5MC4zOGwxNS4xNC05Ny4yOWg4MC44M2wxNS4xNCw5Ny4yOWg5NC4xTDIwNy4zNCwwWm0tOTAuOSwyNjIuNjNsMjAuMTktMTI5LjcyYzMuMTktMjAuMiw1LjMyLTM5Ljg3LDcuOTctNjcuNTJoMi42NmMyLjY2LDI3LjY1LDQuNzgsNDcuMzIsNy45Nyw2Ny41MmwyMC4xOSwxMjkuNzJoLTU4Ljk5WiIvPgogIDxwYXRoIGNsYXNzPSJjbHMtMSIgZD0ibTUxNy44MiwyMDEuNDl2LS41M2MzMC44NC0xMC42Myw1Mi42My00Mi41Myw1Mi42My04OC4yNSwwLTY5LjExLTM5LjM0LTExMi43MS0xMjMuMzQtMTEyLjcxaC0xMTkuNjJ2NDMwLjFoMTI3LjA2Yzg2LjEzLDAsMTI1LjQ3LTQ2Ljc4LDEyNS40Ny0xMjQuNCwwLTU5LjU0LTI0LjQ2LTkwLjkxLTYyLjItMTA0LjJabS0xMDMuMTQtMTM5LjI5aDI0LjQ2YzI4LjcxLDAsNDMuMDYsMTYuNDgsNDMuMDYsNTguNDhzLTE0LjM1LDU4LjQ4LTQzLjA2LDU4LjQ4aC0yNC40NlY2Mi4yWm0zMS45LDMwNS43aC0zMS45di0xMjguNjZoMzEuOWMyOS4yNCwwLDQyLjUzLDE4LjYxLDQyLjUzLDY0LjMzcy0xMy4yOSw2NC4zMy00Mi41Myw2NC4zM1oiLz4KICA8cGF0aCBjbGFzcz0iY2xzLTEiIGQ9Im04MTQuNDgsMjAxLjQ5di0uNTNjMzAuODQtMTAuNjMsNTIuNjMtNDIuNTMsNTIuNjMtODguMjUsMC02OS4xMS0zOS4zNC0xMTIuNzEtMTIzLjM0LTExMi43MWgtMTE5LjYydjQzMC4xaDEyNy4wNmM4Ni4xMywwLDEyNS40Ny00Ni43OCwxMjUuNDctMTI0LjQsMC01OS41NC0yNC40Ni05MC45MS02Mi4yLTEwNC4yWm0tMTAzLjE0LTEzOS4yOWgyNC40NmMyOC43MSwwLDQzLjA2LDE2LjQ4LDQzLjA2LDU4LjQ4cy0xNC4zNSw1OC40OC00My4wNiw1OC40OGgtMjQuNDZWNjIuMlptMzEuOSwzMDUuN2gtMzEuOXYtMTI4LjY2aDMxLjljMjkuMjQsMCw0Mi41MywxOC42MSw0Mi41Myw2NC4zM3MtMTMuMjksNjQuMzMtNDIuNTMsNjQuMzNaIi8+Cjwvc3ZnPg==">
+      <bpmn:extensionElements>
+        <zeebe:taskDefinition type="io.camunda:http-json:1" retries="3" />
+        <zeebe:ioMapping>
+          <zeebe:input source="{{secrets.VANTAGE_BASE_URL}}" target="baseUrl" />
+          <zeebe:input source="/auth2/connect/token" target="operationPath" />
+          <zeebe:input source="POST" target="method" />
+          <zeebe:input source="={&#34;Content-Type&#34;: &#34;application/x-www-form-urlencoded&#34;, &#34;Accept&#34;: &#34;application/json&#34;}" target="headers" />
+          <zeebe:input source="= baseUrl + operationPath" target="url" />
+          <zeebe:input source="{{secrets.VANTAGE_CLIENT_ID}}" target="clientId" />
+          <zeebe:input source="{{secrets.VANTAGE_CLIENT_SECRET}}" target="clientSecret" />
+          <zeebe:input source="openid permissions global.wildcard" target="scopes" />
+          <zeebe:input source="= &#34;grant_type=client_credentials&#34; &#10;+ &#34;&#38;client_id=&#34; + clientId &#10;+ &#34;&#38;client_secret=&#34; + clientSecret &#10;+ &#34;&#38;scope=&#34; + replace(scopes, &#34; &#34;, &#34;%20&#34;)" target="body" />
+        </zeebe:ioMapping>
+        <zeebe:taskHeaders>
+          <zeebe:header key="resultVariable" value="vantageAuthRaw" />
+          <zeebe:header key="resultExpression" value="= { &#10;   VantageAuth: &#10;   { &#10;     accessToken: body.access_token, &#10;     tokenType: body.token_type, &#10;     expiresIn: body.expires_in, &#10;     scope: body.scope &#10;   } &#10; }" />
+          <zeebe:header key="errorExpression" value="= if status &#62;= 400 then { code: status, message: body } else null" />
+          <zeebe:header key="retryBackoff" value="PT5S" />
+        </zeebe:taskHeaders>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1dsd9fa</bpmn:incoming>
+      <bpmn:outgoing>Flow_1wuhlsw</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:sequenceFlow id="Flow_0isrmz3" sourceRef="Activity_0g53xun" targetRef="Event_187s21t" />
+    <bpmn:textAnnotation id="TextAnnotation_042uzwd">
+      <bpmn:text>{ 
+   ProcessingResults: 
+   {
+     TransactionID: body.id,
+     Status: body.status,
+     ManualReviewLink: body.manualReviewLink,
+     Documents: body.documents,
+     Error: body.error,
+     SourceFiles: body.sourceFiles
+   }
+ }</bpmn:text>
+    </bpmn:textAnnotation>
+    <bpmn:association id="Association_01nmqki" associationDirection="None" sourceRef="StartEvent_1" targetRef="TextAnnotation_042uzwd" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_105hzwt">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="292" y="92" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="298" y="135" width="24" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0g53xun_di" bpmnElement="Activity_0g53xun" isExpanded="true">
+        <dc:Bounds x="580" y="18" width="990" height="442" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0cshgm5_di" bpmnElement="Event_0cshgm5">
+        <dc:Bounds x="622" y="172" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="599" y="215" width="85" height="40" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_01o3qa1_di" bpmnElement="Activity_01o3qa1" isExpanded="true">
+        <dc:Bounds x="720" y="70" width="720" height="350" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0exe0uv_di" bpmnElement="Event_0exe0uv">
+        <dc:Bounds x="782" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="762" y="255" width="79" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0q8wbd7_di" bpmnElement="Activity_0q8wbd7">
+        <dc:Bounds x="1030" y="190" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1mlp0ch_di" bpmnElement="Event_1mlp0ch">
+        <dc:Bounds x="1312" y="212" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1290" y="255" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1vxn1nt_di" bpmnElement="Flow_1vxn1nt">
+        <di:waypoint x="818" y="230" />
+        <di:waypoint x="1030" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0get4cm_di" bpmnElement="Flow_0get4cm">
+        <di:waypoint x="1130" y="230" />
+        <di:waypoint x="1312" y="230" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_0b60704_di" bpmnElement="Event_0b60704">
+        <dc:Bounds x="1492" y="172" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1470" y="215" width="83" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_0ytod6p_di" bpmnElement="Flow_0ytod6p">
+        <di:waypoint x="658" y="190" />
+        <di:waypoint x="720" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0ixort9_di" bpmnElement="Flow_0ixort9">
+        <di:waypoint x="1440" y="190" />
+        <di:waypoint x="1492" y="190" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Event_187s21t_di" bpmnElement="Event_187s21t">
+        <dc:Bounds x="1652" y="102" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1660" y="145" width="21" height="14" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0pdq2q0_di" bpmnElement="Activity_0of9u2l">
+        <dc:Bounds x="410" y="70" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_042uzwd_di" bpmnElement="TextAnnotation_042uzwd">
+        <dc:Bounds x="340" y="-290" width="530" height="185" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_1dsd9fa_di" bpmnElement="Flow_1dsd9fa">
+        <di:waypoint x="328" y="110" />
+        <di:waypoint x="410" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1wuhlsw_di" bpmnElement="Flow_1wuhlsw">
+        <di:waypoint x="510" y="110" />
+        <di:waypoint x="580" y="110" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0isrmz3_di" bpmnElement="Flow_0isrmz3">
+        <di:waypoint x="1570" y="120" />
+        <di:waypoint x="1652" y="120" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Association_01nmqki_di" bpmnElement="Association_01nmqki">
+        <di:waypoint x="312" y="92" />
+        <di:waypoint x="340" y="-146" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

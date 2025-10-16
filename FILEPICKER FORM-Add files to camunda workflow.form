@@ -1,0 +1,33 @@
+{
+  "executionPlatform": "Camunda Cloud",
+  "executionPlatformVersion": "8.7.0",
+  "exporter": {
+    "name": "Camunda Web Modeler",
+    "version": "cd71e2f"
+  },
+  "schemaVersion": 19,
+  "id": "select-files-for-upload-0pi6mz5",
+  "components": [
+    {
+      "text": "# **Files**",
+      "type": "text",
+      "layout": {
+        "row": "Row_1w9bv1w",
+        "columns": null
+      },
+      "id": "Field_1qhje9q"
+    },
+    {
+      "label": "File picker",
+      "type": "filepicker",
+      "layout": {
+        "row": "Row_1qn2c9d",
+        "columns": null
+      },
+      "id": "Field_1psmfs4",
+      "key": "files",
+      "multiple": true
+    }
+  ],
+  "type": "default"
+}
