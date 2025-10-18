@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="aeb6dcc" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+  <bpmn:process id="Process_0oewqnw" name="ABBYY Vantage E2E" isExecutable="true"><bpmn:extensionElements><zeebe:versionTag value="1.1"></zeebe:versionTag></bpmn:extensionElements>
+    <bpmn:callActivity id="Activity_1j5xsbq" name="Download Vantage Results">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="Process_105hzwt" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=Processed_VantageTransactionMetadata" target="TransactionData" />
+          <zeebe:output source="=Results" target="ResultFiles_Vantage" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1ufde8i</bpmn:incoming>
+      <bpmn:outgoing>Flow_1d0vq4z</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:sequenceFlow id="Flow_01fupg7" sourceRef="Activity_1pm8tt2" targetRef="Activity_018u8ia" />
+    <bpmn:sequenceFlow id="Flow_1co0gcw" sourceRef="StartEvent_1" targetRef="Activity_1pm8tt2" />
+    <bpmn:sequenceFlow id="Flow_1d0vq4z" sourceRef="Activity_1j5xsbq" targetRef="Event_0oygegp" />
+    <bpmn:sequenceFlow id="Flow_1ufde8i" sourceRef="Activity_018u8ia" targetRef="Activity_1j5xsbq" />
+    <bpmn:callActivity id="Activity_018u8ia" name="Manage Vantage Processing">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="Process_08muo46" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=New_VantageTransactionMetadata" target="Transaction" />
+          <zeebe:output source="=TransactionData" target="Processed_VantageTransactionMetadata" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_01fupg7</bpmn:incoming>
+      <bpmn:outgoing>Flow_1ufde8i</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:startEvent id="StartEvent_1" name="Raw Files Recieved">
+      <bpmn:extensionElements>
+        <zeebe:formDefinition formId="select-files-for-upload-0pi6mz5" />
+        <zeebe:ioMapping>
+          <zeebe:output source="=files" target="RawFiles_Vantage" />
+        </zeebe:ioMapping>
+      </bpmn:extensionElements>
+      <bpmn:outgoing>Flow_1co0gcw</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_0oygegp" name="Result Files Downloaded">
+      <bpmn:extensionElements />
+      <bpmn:incoming>Flow_1d0vq4z</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:callActivity id="Activity_1pm8tt2" name="Send Files To Vantage">
+      <bpmn:extensionElements>
+        <zeebe:calledElement processId="Process_16uoztz" propagateAllChildVariables="false" propagateAllParentVariables="false" />
+        <zeebe:ioMapping>
+          <zeebe:input source="=RawFiles_Vantage" target="files" />
+          <zeebe:output source="=Transaction" target="New_VantageTransactionMetadata" />
+        </zeebe:ioMapping>
+        <zeebe:properties>
+          <zeebe:property name="camundaModeler:exampleOutputJson" value="{&#10;  &#34;Id&#34;: &#34;6d972839-fd57-4d6b-b9ea-a797e14458a3&#34;,&#10;  &#34;mobileInputLink&#34;: null&#10;}" />
+        </zeebe:properties>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1co0gcw</bpmn:incoming>
+      <bpmn:outgoing>Flow_01fupg7</bpmn:outgoing>
+    </bpmn:callActivity>
+    <bpmn:textAnnotation id="TextAnnotation_0g804ba">
+      <bpmn:text>Processed_VantageTransactionMetadata:
+{
+&#xa0; "id": "76800e3c-26f8-4395-853c-8f340b9c6de5",
+&#xa0; "status": "Processed",
+&#xa0; "documents": [
+&#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; "id": "28c88be3-9deb-4a32-ac74-179d76e16b5f",
+&#xa0; &#xa0; &#xa0; "resultFiles": [
+&#xa0; &#xa0; &#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "fileId": ".blob.6b4aad1a-11cb-42f9-8b5a-d284d0a95313",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "fileName": "Invoice.json",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "type": "Json"
+&#xa0; &#xa0; &#xa0; &#xa0; },
+&#xa0; &#xa0; &#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "fileId": ".blob.7e4543e8-d0b1-458d-92c9-4d81d6e934d7",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "fileName": "Invoice_fields.json",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "type": "FieldsJson"
+&#xa0; &#xa0; &#xa0; &#xa0; }
+&#xa0; &#xa0; &#xa0; ],
+&#xa0; &#xa0; &#xa0; "businessRulesErrors": [
+&#xa0; &#xa0; &#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "errorType": "CustomScript",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "customMessage": "Currency does not match allowed values. \n Main Currency;\n LI Currency 4;",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "ruleId": "38a17082-20d9-4551-b081-d8467416bb25"
+&#xa0; &#xa0; &#xa0; &#xa0; },
+&#xa0; &#xa0; &#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "errorType": "CustomScript",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "ruleId": "6f323419-305a-44ab-98b3-36706b0b3618",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "currentFieldId": "00034e9f-256c-b282-0100-01ecc1deb333"
+&#xa0; &#xa0; &#xa0; &#xa0; },
+&#xa0; &#xa0; &#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "errorType": "CustomScript",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "ruleId": "6f323419-305a-44ab-98b3-36706b0b3618",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "currentFieldId": "00034ebb-256c-b332-0100-33ed28608807"
+&#xa0; &#xa0; &#xa0; &#xa0; },
+&#xa0; &#xa0; &#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "errorType": "CustomScript",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "ruleId": "58dcddcd-0709-4edd-a723-d098474c24dd"
+&#xa0; &#xa0; &#xa0; &#xa0; },
+&#xa0; &#xa0; &#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "errorType": "CustomScript",
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "ruleId": "91287515-15af-4de2-8a7c-91c76afdadd4"
+&#xa0; &#xa0; &#xa0; &#xa0; },
+&#xa0; &#xa0; &#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; &#xa0; &#xa0; "errorType": "Normalization"
+&#xa0; &#xa0; &#xa0; &#xa0; }
+&#xa0; &#xa0; &#xa0; ]
+&#xa0; &#xa0; }
+&#xa0; ],
+&#xa0; "sourceFiles": [
+&#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; "id": ".blob.affc00cf-e973-4287-bbaf-23869743c695",
+&#xa0; &#xa0; &#xa0; "name": "invoice_1.jpg"
+&#xa0; &#xa0; },
+&#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; "id": ".blob.7985eb62-e728-424c-89d0-98d39b8b44d1",
+&#xa0; &#xa0; &#xa0; "name": "invoice_2.jpg"
+&#xa0; &#xa0; },
+&#xa0; &#xa0; {
+&#xa0; &#xa0; &#xa0; "id": ".blob.695f05db-95f7-47e8-aa20-d42bd2f7e802",
+&#xa0; &#xa0; &#xa0; "name": "invoice_3.jpg"
+&#xa0; &#xa0; }
+&#xa0; ]
+}</bpmn:text>
+    </bpmn:textAnnotation>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_0oewqnw">
+      <bpmndi:BPMNShape id="Activity_1j5xsbq_di" bpmnElement="Activity_1j5xsbq">
+        <dc:Bounds x="940" y="256" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_018u8ia_di" bpmnElement="Activity_018u8ia">
+        <dc:Bounds x="740" y="258" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="352" y="280" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="347" y="323" width="49" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0oygegp_di" bpmnElement="Event_0oygegp">
+        <dc:Bounds x="1192" y="278" width="36" height="36" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1179" y="321" width="62" height="27" />
+        </bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1pm8tt2_di" bpmnElement="Activity_1pm8tt2">
+        <dc:Bounds x="550" y="256" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="TextAnnotation_0g804ba_di" bpmnElement="TextAnnotation_0g804ba">
+        <dc:Bounds x="2240" y="90" width="610" height="932.9861450195312" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_01fupg7_di" bpmnElement="Flow_01fupg7">
+        <di:waypoint x="650" y="296" />
+        <di:waypoint x="740" y="296" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1co0gcw_di" bpmnElement="Flow_1co0gcw">
+        <di:waypoint x="388" y="298" />
+        <di:waypoint x="550" y="298" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1d0vq4z_di" bpmnElement="Flow_1d0vq4z">
+        <di:waypoint x="1040" y="296" />
+        <di:waypoint x="1192" y="296" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1ufde8i_di" bpmnElement="Flow_1ufde8i">
+        <di:waypoint x="840" y="298" />
+        <di:waypoint x="940" y="298" />
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>

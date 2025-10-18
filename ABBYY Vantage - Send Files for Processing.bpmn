@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="6fa1b0b" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:modeler="http://camunda.org/schema/modeler/1.0" xmlns:zeebe="http://camunda.org/schema/zeebe/1.0" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:bioc="http://bpmn.io/schema/bpmn/biocolor/1.0" xmlns:color="http://www.omg.org/spec/BPMN/non-normative/color/1.0" id="Definitions_1" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Web Modeler" exporterVersion="aeb6dcc" modeler:executionPlatform="Camunda Cloud" modeler:executionPlatformVersion="8.8.0">
   <bpmn:process id="Process_16uoztz" name="ABBYY Vantage - Send Files for Processing" isExecutable="true">
+    <bpmn:extensionElements>
+      <zeebe:properties>
+        <zeebe:property name="camundaModeler:exampleOutputJson" value="" />
+      </zeebe:properties>
+    </bpmn:extensionElements>
     <bpmn:startEvent id="StartEvent_1" name="">
       <bpmn:extensionElements>
         <zeebe:formDefinition formId="select-files-for-upload-0pi6mz5" />
@@ -30,7 +35,7 @@
             <zeebe:input source="bearer" target="authentication.type" />
             <zeebe:input source="=VantageAuth.accessToken" target="authentication.token" />
             <zeebe:input source="POST" target="method" />
-            <zeebe:input source="=&#34;https://vantage-us.abbyy.com/api/publicapi/v1/transactions/&#34;+Transaction.Id +&#34;/files/&#34;" target="url" />
+            <zeebe:input source="=&#34;https://vantage-us.abbyy.com/api/publicapi/v1/transactions/&#34;+NewTransaction.Id +&#34;/files/&#34;" target="url" />
             <zeebe:input source="={&#34;Content-Type&#34;: &#34;multipart/form-data&#34;, &#34;uploaded-by&#34;: &#34;camunda-saas&#34;}" target="headers" />
             <zeebe:input source="=false" target="storeResponse" />
             <zeebe:input source="=20" target="connectionTimeoutInSeconds" />
@@ -52,7 +57,7 @@
     <bpmn:endEvent id="Event_0aum4i3">
       <bpmn:extensionElements>
         <zeebe:ioMapping>
-          <zeebe:output source="=Transaction" target="VantageTransaction" />
+          <zeebe:output source="=NewTransaction" target="Transaction" />
         </zeebe:ioMapping>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1ngw3ad</bpmn:incoming>
@@ -78,7 +83,7 @@
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="1" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
-          <zeebe:header key="resultExpression" value="={&#10;  Transaction:&#10;  {&#10;    Id:body. transactionId,&#10;    mobileInputLink: body.mobileInputLink&#10;  }&#10;}" />
+          <zeebe:header key="resultExpression" value="={&#10;  NewTransaction:&#10;  {&#10;    Id:body. transactionId,&#10;    mobileInputLink: body.mobileInputLink&#10;  }&#10;}" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_1m54pqh</bpmn:incoming>
@@ -114,7 +119,7 @@
         <zeebe:ioMapping>
           <zeebe:input source="POST" target="method" />
           <zeebe:input source="{{secrets.VANTAGE_BASE_URL}}" target="baseurl" />
-          <zeebe:input source="=&#34;/api/publicapi/v1/transactions/&#34;+Transaction.Id+&#34;/start&#34;" target="path" />
+          <zeebe:input source="=&#34;/api/publicapi/v1/transactions/&#34;+NewTransaction.Id+&#34;/start&#34;" target="path" />
           <zeebe:input source="=baseurl+path" target="url" />
           <zeebe:input source="=VantageAuth.accessToken" target="AuthToken" />
           <zeebe:input source="={ &#10;  &#34;accept&#34;: &#34;text/plain&#34;, &#10;  &#34;Authorization&#34;: &#34;Bearer &#34; + AuthToken, &#10;  &#34;Content-Type&#34;: &#34;application/json&#34; &#10;}" target="headers" />
@@ -122,7 +127,6 @@
         <zeebe:taskHeaders>
           <zeebe:header key="elementTemplateVersion" value="1" />
           <zeebe:header key="elementTemplateId" value="io.camunda.connectors.HttpJson.v2" />
-          <zeebe:header key="resultExpression" value="=StartTransactionRaw" />
         </zeebe:taskHeaders>
       </bpmn:extensionElements>
       <bpmn:incoming>Flow_0t6uy4k</bpmn:incoming>
@@ -151,19 +155,19 @@ cb83ff65-3318-44f2-8e13-70ad947542ac</bpmn:text>
   <bpmndi:BPMNDiagram id="BPMNDiagram_1">
     <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="Process_16uoztz">
       <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
-        <dc:Bounds x="150" y="100" width="36" height="36" />
+        <dc:Bounds x="202" y="100" width="36" height="36" />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_1bqwqit_di" bpmnElement="Activity_1bqwqit" isExpanded="true" bioc:stroke="#6b3c00" bioc:fill="#ffe0b2" color:background-color="#ffe0b2" color:border-color="#6b3c00">
         <dc:Bounds x="650" y="18" width="440" height="200" />
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1r9526r_di" bpmnElement="Event_1r9526r" bioc:stroke="#205022" bioc:fill="#c8e6c9" color:background-color="#c8e6c9" color:border-color="#205022">
+      <bpmndi:BPMNShape id="Event_1r9526r_di" bpmnElement="Event_1r9526r">
         <dc:Bounds x="670" y="100" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="657" y="143" width="65" height="14" />
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
-      <bpmndi:BPMNShape id="Event_1o16pp3_di" bpmnElement="Event_1o16pp3" bioc:stroke="#831311" bioc:fill="#ffcdd2" color:background-color="#ffcdd2" color:border-color="#831311">
+      <bpmndi:BPMNShape id="Event_1o16pp3_di" bpmnElement="Event_1o16pp3">
         <dc:Bounds x="1012" y="100" width="36" height="36" />
         <bpmndi:BPMNLabel>
           <dc:Bounds x="992" y="143" width="76" height="27" />
@@ -206,7 +210,7 @@ cb83ff65-3318-44f2-8e13-70ad947542ac</bpmn:text>
         <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNEdge id="Flow_1it1xqd_di" bpmnElement="Flow_1it1xqd">
-        <di:waypoint x="186" y="118" />
+        <di:waypoint x="238" y="118" />
         <di:waypoint x="300" y="118" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Flow_1m54pqh_di" bpmnElement="Flow_1m54pqh">
@@ -226,8 +230,8 @@ cb83ff65-3318-44f2-8e13-70ad947542ac</bpmn:text>
         <di:waypoint x="1312" y="118" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Association_0vh315r_di" bpmnElement="Association_0vh315r">
-        <di:waypoint x="179" y="104" />
-        <di:waypoint x="389" y="-159" />
+        <di:waypoint x="230" y="103" />
+        <di:waypoint x="395" y="-159" />
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge id="Association_0iquyy1_di" bpmnElement="Association_0iquyy1">
         <di:waypoint x="1340" y="103" />
